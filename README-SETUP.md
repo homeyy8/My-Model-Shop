@@ -1,41 +1,21 @@
-# My Model Shop — Online Free Setup
+# My Model Shop — Login Fixed
 
-ชุดนี้เปลี่ยนจาก localStorage เป็น Supabase เพื่อให้สินค้าถูกเก็บออนไลน์และทุกอุปกรณ์เห็นข้อมูลชุดเดียวกัน
+ชุดนี้แก้ปัญหาหน้า Admin กดเข้าสู่ระบบแล้วไม่มีอะไรเกิดขึ้น โดยเพิ่มการตรวจสอบ Supabase และแสดงข้อผิดพลาดให้เห็นชัดเจน พร้อม fallback CDN และตัดการสมัคร Admin จากหน้าเว็บ
 
-## 1) สร้าง Supabase
-1. เข้า https://supabase.com/ แล้วสร้าง Project แบบ Free
-2. เปิด SQL Editor
-3. เปิดไฟล์ `schema.sql` แล้วรันทั้งหมด
-4. ไปที่ Authentication > Users แล้วสร้างบัญชีผู้ดูแล 1 บัญชี หรือใช้ปุ่มสมัครบัญชีในหน้า admin
-5. ไปที่ Project Settings > API แล้วคัดลอก Project URL และ Publishable/Anon key
-6. เปิด `config.js` แล้วแทนที่ `YOUR_SUPABASE_URL` และ `YOUR_SUPABASE_ANON_KEY`
+## ไฟล์
+- `index.html` หน้าร้าน
+- `admin.html` หน้า Admin
+- `app.js` ระบบสินค้า + Login + อัปโหลดหลายรูป
+- `style.css` รูปแบบเว็บ
+- `config.js` URL และ Publishable key ของ Supabase
+- `schema.sql` RLS สำหรับ Admin `mymodelshop@gmail.com`
 
-> ห้ามนำ `service_role` key มาใส่ในเว็บเด็ดขาด
+## สำคัญ
+1. ใน Supabase > Authentication > Users ต้องมีผู้ใช้ `mymodelshop@gmail.com` อยู่แล้ว
+2. ใช้รหัสผ่านที่ตั้งไว้กับบัญชีนี้เท่านั้น
+3. รัน `schema.sql` ใน Supabase SQL Editor เพื่อใช้ RLS ชุดนี้
+4. ห้ามใส่รหัสผ่านลงในไฟล์หรือ GitHub
+5. `config.js` ใช้ Publishable key เท่านั้น ห้ามใช้ `service_role` หรือ `sb_secret_...`
 
-## 2) ทดสอบบนเครื่อง
-เปิดเว็บด้วย local server เช่น VS Code Live Server หรือ Python HTTP server
-
-## 3) เอาขึ้น Cloudflare Pages
-- สร้าง GitHub repository ใหม่
-- อัปโหลดไฟล์ทั้งหมดในโฟลเดอร์นี้
-- เชื่อม repository กับ Cloudflare Pages
-- ตั้ง Build command เป็น `exit 0`
-- Build output directory เป็น `/` หรือโฟลเดอร์ root ที่มี `index.html`
-- หลัง deploy จะได้โดเมน `*.pages.dev`
-
-## 4) ย้ายข้อมูลเดิม
-ถ้าข้อมูลสินค้าเดิมยังอยู่ใน browser เดิม ให้เปิด `admin.html` หลังตั้งค่า Supabase แล้วกด `นำเข้าข้อมูลเดิม` ระบบจะอ่าน `my_model_shop_products_v1` จากเครื่องนั้นและอัปโหลดสินค้า/รูปขึ้นฐานข้อมูลออนไลน์
-
-## หมายเหตุ
-- Free Supabase มีฐานข้อมูล 500 MB และ Storage 1 GB ต่อโปรเจกต์ตามโควต้าปัจจุบัน
-- รูปสินค้าควรใช้ JPG/WebP ขนาดไม่ใหญ่เกินจำเป็น
-- Cloudflare Pages ใช้ static HTML ได้ และมีโดเมน `*.pages.dev` ให้หลัง deploy
-
-
-## 5) ตั้งค่าสิทธิ์ Admin แบบปลอดภัย
-ก่อนเปิดใช้งาน ให้เปิด `schema.sql` และเปลี่ยน `YOUR_ADMIN_EMAIL` เป็นอีเมลบัญชีผู้ดูแล Supabase ของคุณเท่านั้น
-ห้ามใส่รหัสผ่านลงในไฟล์ใด ๆ
-
-ระบบนี้ปิดการสมัครบัญชีจากหน้าเว็บแล้ว และ RLS จะอนุญาตให้เฉพาะอีเมลผู้ดูแลที่กำหนดเท่านั้นเพิ่ม/แก้ไข/ลบสินค้าและรูปภาพได้
-
-> Publishable key ใน `config.js` สามารถอยู่ใน frontend ได้ แต่ห้ามนำ Secret/Service Role key หรือรหัสผ่านมาใส่ในไฟล์นี้
+## ทดสอบ
+วางไฟล์ทั้งหมดไว้ในโฟลเดอร์เดียวกัน แล้วเปิดผ่าน local server หรือ deploy ไป Cloudflare Pages

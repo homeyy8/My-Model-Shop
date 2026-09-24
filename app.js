@@ -1,4 +1,18 @@
-const SUPA = window.supabase.createClient(window.SUPABASE_URL, window.SUPABASE_ANON_KEY);
+let SUPA = null;
+let SUPABASE_INIT_ERROR = null;
+
+try {
+  if (!window.supabase || typeof window.supabase.createClient !== 'function') {
+    throw new Error('โหลด Supabase ไม่สำเร็จ กรุณารีเฟรชหน้า หรือเปิดอินเทอร์เน็ต แล้วลองใหม่');
+  }
+  if (!window.SUPABASE_URL || !window.SUPABASE_ANON_KEY) {
+    throw new Error('ยังไม่ได้ตั้งค่า Supabase ใน config.js');
+  }
+  SUPA = window.supabase.createClient(window.SUPABASE_URL, window.SUPABASE_ANON_KEY);
+} catch (e) {
+  SUPABASE_INIT_ERROR = e;
+  console.error('Supabase initialization failed:', e);
+}
 const OLD_KEY = "my_model_shop_products_v1";
 let galleryProduct = null;
 let galleryIndex = 0;
@@ -52,10 +66,41 @@ function closeGallery(){document.getElementById('imagePopup')?.classList.remove(
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeGallery();if(document.getElementById('imagePopup')?.classList.contains('show')){if(e.key==='ArrowLeft')galleryPrev();if(e.key==='ArrowRight')galleryNext()}});
 
 async function requireUser(){const {data}=await SUPA.auth.getUser();return data.user}
-async function adminInit(){const user=await requireUser();const login=document.getElementById('loginBox'),dash=document.getElementById('adminDashboard');if(!user){login.style.display='block';dash.style.display='none';return}login.style.display='none';dash.style.display='block';document.getElementById('adminEmail').textContent=user.email;await renderAdmin()}
-async function loginAdmin(){const email=document.getElementById('loginEmail').value.trim(),password=document.getElementById('loginPassword').value;const msg=document.getElementById('loginMsg');msg.textContent='กำลังเข้าสู่ระบบ...';const {error}=await SUPA.auth.signInWithPassword({email,password});if(error){msg.textContent=error.message;return}await adminInit()}
+async function adminInit(){
+  const login=document.getElementById('loginBox'),dash=document.getElementById('adminDashboard'),msg=document.getElementById('loginMsg');
+  try{
+    if(SUPABASE_INIT_ERROR || !SUPA) throw (SUPABASE_INIT_ERROR || new Error('Supabase ยังไม่พร้อมใช้งาน'));
+    const user=await requireUser();
+    if(!user){login.style.display='block';dash.style.display='none';return}
+    login.style.display='none';
+    dash.style.display='block';
+    document.getElementById('adminEmail').textContent=user.email||'';
+    await renderAdmin();
+  }catch(e){
+    console.error('adminInit error:',e);
+    if(login) login.style.display='block';
+    if(dash) dash.style.display='none';
+    if(msg) msg.textContent='เชื่อมต่อระบบไม่สำเร็จ: '+(e?.message||e);
+  }
+}
+async function loginAdmin(){
+  const msg=document.getElementById('loginMsg');
+  try{
+    if(SUPABASE_INIT_ERROR || !SUPA) throw (SUPABASE_INIT_ERROR || new Error('Supabase ยังไม่พร้อมใช้งาน'));
+    const email=document.getElementById('loginEmail').value.trim();
+    const password=document.getElementById('loginPassword').value;
+    if(!email || !password){msg.textContent='กรุณากรอกอีเมลและรหัสผ่าน';return}
+    msg.textContent='กำลังเข้าสู่ระบบ...';
+    const {error}=await SUPA.auth.signInWithPassword({email,password});
+    if(error){console.error('Login error:',error);msg.textContent='เข้าสู่ระบบไม่สำเร็จ: '+error.message;return}
+    msg.textContent='เข้าสู่ระบบสำเร็จ กำลังเปิดหน้าจัดการสินค้า...';
+    await adminInit();
+  }catch(e){
+    console.error('loginAdmin error:',e);
+    msg.textContent='เกิดข้อผิดพลาด: '+(e?.message||e);
+  }
+}
 async function logoutAdmin(){await SUPA.auth.signOut();location.reload()}
-const {error}=await SUPA.auth.signUp({email,password});msg.textContent=error?error.message:'สมัครสำเร็จ หากเปิดยืนยันอีเมล ให้ยืนยันอีเมลก่อนเข้าสู่ระบบ'}
 
 async function renderAdmin(){
  const ps=await getProducts({admin:true});
