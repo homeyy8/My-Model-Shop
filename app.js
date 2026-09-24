@@ -1,12 +1,11 @@
 let SUPA = null;
 let SUPABASE_INIT_ERROR = null;
-
 try {
   if (!window.supabase || typeof window.supabase.createClient !== 'function') {
-    throw new Error('โหลด Supabase ไม่สำเร็จ กรุณารีเฟรชหน้า หรือเปิดอินเทอร์เน็ต แล้วลองใหม่');
+    throw new Error('โหลด Supabase ไม่สำเร็จ');
   }
   if (!window.SUPABASE_URL || !window.SUPABASE_ANON_KEY) {
-    throw new Error('ยังไม่ได้ตั้งค่า Supabase ใน config.js');
+    throw new Error('ไม่พบค่า Supabase ใน config');
   }
   SUPA = window.supabase.createClient(window.SUPABASE_URL, window.SUPABASE_ANON_KEY);
 } catch (e) {
@@ -65,42 +64,46 @@ function galleryNext(){if(!galleryProduct?.images?.length)return;galleryIndex=(g
 function closeGallery(){document.getElementById('imagePopup')?.classList.remove('show')}
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeGallery();if(document.getElementById('imagePopup')?.classList.contains('show')){if(e.key==='ArrowLeft')galleryPrev();if(e.key==='ArrowRight')galleryNext()}});
 
-async function requireUser(){const {data}=await SUPA.auth.getUser();return data.user}
+async function requireUser(){
+  if(!SUPA) throw (SUPABASE_INIT_ERROR || new Error('Supabase ยังไม่พร้อมใช้งาน'));
+  const {data,error}=await SUPA.auth.getUser();
+  if(error) throw error;
+  return data.user;
+}
 async function adminInit(){
   const login=document.getElementById('loginBox'),dash=document.getElementById('adminDashboard'),msg=document.getElementById('loginMsg');
   try{
-    if(SUPABASE_INIT_ERROR || !SUPA) throw (SUPABASE_INIT_ERROR || new Error('Supabase ยังไม่พร้อมใช้งาน'));
+    if(!SUPA) throw (SUPABASE_INIT_ERROR || new Error('Supabase ยังไม่พร้อมใช้งาน'));
     const user=await requireUser();
     if(!user){login.style.display='block';dash.style.display='none';return}
-    login.style.display='none';
-    dash.style.display='block';
+    login.style.display='none';dash.style.display='block';
     document.getElementById('adminEmail').textContent=user.email||'';
     await renderAdmin();
   }catch(e){
     console.error('adminInit error:',e);
-    if(login) login.style.display='block';
-    if(dash) dash.style.display='none';
+    login.style.display='block';dash.style.display='none';
     if(msg) msg.textContent='เชื่อมต่อระบบไม่สำเร็จ: '+(e?.message||e);
   }
 }
 async function loginAdmin(){
   const msg=document.getElementById('loginMsg');
   try{
-    if(SUPABASE_INIT_ERROR || !SUPA) throw (SUPABASE_INIT_ERROR || new Error('Supabase ยังไม่พร้อมใช้งาน'));
     const email=document.getElementById('loginEmail').value.trim();
     const password=document.getElementById('loginPassword').value;
     if(!email || !password){msg.textContent='กรุณากรอกอีเมลและรหัสผ่าน';return}
+    if(!SUPA) throw (SUPABASE_INIT_ERROR || new Error('Supabase ยังไม่พร้อมใช้งาน'));
     msg.textContent='กำลังเข้าสู่ระบบ...';
-    const {error}=await SUPA.auth.signInWithPassword({email,password});
+    const {data,error}=await SUPA.auth.signInWithPassword({email,password});
     if(error){console.error('Login error:',error);msg.textContent='เข้าสู่ระบบไม่สำเร็จ: '+error.message;return}
-    msg.textContent='เข้าสู่ระบบสำเร็จ กำลังเปิดหน้าจัดการสินค้า...';
+    console.log('Login success:',data.user?.email);
+    msg.textContent='เข้าสู่ระบบสำเร็จ กำลังโหลด...';
     await adminInit();
   }catch(e){
     console.error('loginAdmin error:',e);
     msg.textContent='เกิดข้อผิดพลาด: '+(e?.message||e);
   }
 }
-async function logoutAdmin(){await SUPA.auth.signOut();location.reload()}
+async function logoutAdmin(){if(SUPA) await SUPA.auth.signOut();location.reload()}
 
 async function renderAdmin(){
  const ps=await getProducts({admin:true});
