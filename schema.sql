@@ -29,3 +29,36 @@ create policy "Public can view product images" on storage.objects for select usi
 create policy "Admin can upload product images" on storage.objects for insert to authenticated with check (bucket_id='product-images' and (select auth.jwt()->>'email')='mymodelshop@gmail.com');
 create policy "Admin can update product images" on storage.objects for update to authenticated using (bucket_id='product-images' and (select auth.jwt()->>'email')='mymodelshop@gmail.com') with check (bucket_id='product-images' and (select auth.jwt()->>'email')='mymodelshop@gmail.com');
 create policy "Admin can delete product images" on storage.objects for delete to authenticated using (bucket_id='product-images' and (select auth.jwt()->>'email')='mymodelshop@gmail.com');
+
+
+-- Visitor counter: counts unique anonymous browsers/devices (not real-world identities).
+create table if not exists public.site_visitors (
+  visitor_id text primary key,
+  first_seen timestamptz not null default now()
+);
+alter table public.site_visitors enable row level security;
+
+revoke all on table public.site_visitors from anon, authenticated;
+grant select, insert on table public.site_visitors to anon;
+
+create or replace function public.register_site_visitor(p_visitor_id text)
+returns bigint
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare total bigint;
+begin
+  if p_visitor_id is null or length(p_visitor_id) < 10 or length(p_visitor_id) > 100 then
+    raise exception 'invalid visitor id';
+  end if;
+  insert into public.site_visitors(visitor_id)
+  values (p_visitor_id)
+  on conflict (visitor_id) do nothing;
+  select count(*) into total from public.site_visitors;
+  return total;
+end;
+$$;
+
+revoke all on function public.register_site_visitor(text) from public;
+grant execute on function public.register_site_visitor(text) to anon, authenticated;

@@ -3,3 +3,31 @@
 .pic{position:relative}.image-count{position:absolute;right:10px;bottom:10px;background:#173d2ccc;color:#fff;padding:6px 9px;border-radius:999px;font-size:12px}.image-popup{display:none;position:fixed;inset:0;background:rgba(8,14,10,.88);z-index:9999;align-items:center;justify-content:center;padding:20px}.image-popup.show{display:flex}.image-popup-card{position:relative;width:min(1000px,96vw);height:min(92vh,850px);display:flex;flex-direction:column;align-items:center;justify-content:center}.image-popup-card>img{max-width:90vw;max-height:76vh;object-fit:contain;border-radius:12px;box-shadow:0 10px 40px #0008}.image-popup-close{position:absolute;right:0;top:0;border:0;background:#fff;color:#173d2c;width:42px;height:42px;border-radius:50%;font-size:30px;cursor:pointer;z-index:3}.gallery-nav{position:absolute;top:45%;border:0;background:#fff;color:#173d2c;width:48px;height:48px;border-radius:50%;font-size:38px;line-height:35px;cursor:pointer;z-index:3}.gallery-nav.prev{left:10px}.gallery-nav.next{right:10px}#galleryInfo{color:#fff;margin-top:12px;font-size:14px;text-align:center}.gallery-thumbs{display:flex;gap:8px;overflow:auto;max-width:90vw;margin-top:12px;padding:4px}.gallery-thumb{width:58px;height:58px;object-fit:cover;border-radius:8px;border:2px solid transparent;cursor:pointer}.gallery-thumb.active{border-color:#fff}.preview{display:flex;gap:10px;flex-wrap:wrap}.preview-item{position:relative;display:flex;flex-direction:column;gap:4px}.preview-item img{width:100px;height:100px;object-fit:cover;border-radius:10px}.preview-item .danger{padding:5px 8px;font-size:11px}@media(max-width:700px){.gallery-nav{width:40px;height:40px;font-size:30px}.image-popup-card>img{max-width:88vw;max-height:68vh}}
 
 .upload-hint{display:block;color:#7b857f;font-size:12px;font-weight:400;margin-top:-4px;line-height:1.6}.pending-preview{border:1px dashed #9ab2a0;border-radius:12px;padding:4px}
+
+/* Contact + visitor counter */
+.contact-section{max-width:1120px;margin:70px auto 20px;padding:0 24px}
+.contact-card{position:relative;overflow:hidden;border-radius:28px;padding:34px 38px;display:flex;align-items:center;justify-content:space-between;gap:28px;background:linear-gradient(135deg,rgba(11,52,39,.98),rgba(29,83,60,.95));color:#fff;box-shadow:0 18px 45px rgba(0,0,0,.12)}
+.contact-card:after{content:"";position:absolute;inset:auto -60px -90px auto;width:260px;height:260px;border-radius:50%;background:rgba(255,255,255,.08)}
+.contact-card h2{margin:6px 0 8px;font-size:clamp(24px,3vw,36px)}
+.contact-card p{margin:0;opacity:.86}
+.contact-actions{display:flex;gap:12px;flex-wrap:wrap;position:relative;z-index:2}
+.contact-btn{display:inline-flex;align-items:center;justify-content:center;padding:13px 20px;border-radius:999px;text-decoration:none;font-weight:800;background:#fff;color:#123b2b;transition:.2s;white-space:nowrap}
+.contact-btn:hover{transform:translateY(-2px);box-shadow:0 8px 18px rgba(0,0,0,.18)}
+.visitor-section{display:flex;justify-content:center;padding:0 24px 48px}
+.visitor-counter{display:flex;align-items:center;gap:14px;padding:14px 22px;border:1px solid rgba(18,59,43,.12);background:rgba(255,255,255,.9);border-radius:18px;box-shadow:0 10px 30px rgba(0,0,0,.06)}
+.visitor-icon{font-size:22px}
+.visitor-counter b{display:block;font-size:24px;line-height:1.05}
+.visitor-counter span:not(.visitor-icon){display:block;font-size:13px;opacity:.65;margin-top:4px}
+
+/* Warm collector-style hero background */
+.hero{position:relative;overflow:hidden;background:
+ radial-gradient(circle at 80% 28%,rgba(214,171,84,.18),transparent 24%),
+ linear-gradient(120deg,rgba(7,48,35,.96),rgba(26,75,53,.88)),
+ url('hunting-bg.svg') center/cover no-repeat;min-height:340px}
+.hero:after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(5,35,25,.72),rgba(5,35,25,.18));pointer-events:none}
+.hero>div{position:relative;z-index:2}
+@media(max-width:760px){
+ .contact-card{padding:26px;align-items:flex-start;flex-direction:column}
+ .contact-actions{width:100%}.contact-btn{flex:1}
+ .hero{min-height:360px}
+}

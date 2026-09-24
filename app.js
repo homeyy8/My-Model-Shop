@@ -22,6 +22,28 @@ function catName(c){return c==='toy-gun'?'ปืนของเล่น':'โ�
 function esc(s){return String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]))}
 function normalizeProduct(p){return {...p,oldprice:+p.oldprice||0,price:+p.price||0,stock:+p.stock||0,images:Array.isArray(p.images)?p.images:[]}}
 
+function getVisitorId(){
+  const key='my_model_shop_visitor_id';
+  let id=localStorage.getItem(key);
+  if(!id){
+    id=(crypto.randomUUID?crypto.randomUUID():Date.now()+'-'+Math.random().toString(36).slice(2));
+    localStorage.setItem(key,id);
+  }
+  return id;
+}
+async function registerVisitor(){
+  const el=document.getElementById('visitorCount');
+  try{
+    if(!SUPA) throw (SUPABASE_INIT_ERROR||new Error('Supabase ยังไม่พร้อมใช้งาน'));
+    const {data,error}=await SUPA.rpc('register_site_visitor',{p_visitor_id:getVisitorId()});
+    if(error) throw error;
+    if(el) el.textContent=Number(data||0).toLocaleString('th-TH');
+  }catch(e){
+    console.warn('Visitor counter unavailable:',e);
+    if(el) el.textContent='—';
+  }
+}
+
 async function getProducts({admin=false}={}){
   let q=SUPA.from('products').select('*').order('created_at',{ascending:false});
   if(!admin) q=q.eq('active',true);

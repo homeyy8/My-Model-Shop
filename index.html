@@ -28,6 +28,26 @@
   <div id="products" class="grid"></div>
 </main>
 
+
+<section class="contact-section">
+  <div class="contact-card">
+    <div>
+      <span class="eyebrow">CONTACT</span>
+      <h2>สนใจสินค้าหรือสอบถามเพิ่มเติม</h2>
+      <p>ติดต่อได้โดยตรงผ่าน Facebook หรือ LINE</p>
+    </div>
+    <div class="contact-actions">
+      <a class="contact-btn facebook" href="https://www.facebook.com/buffalo.man.3" target="_blank" rel="noopener noreferrer">FACEBOOK</a>
+      <a class="contact-btn line" href="https://line.me/ti/p/~51171754" target="_blank" rel="noopener noreferrer">LINE ID: 51171754</a>
+    </div>
+  </div>
+</section>
+<section class="visitor-section">
+  <div class="visitor-counter">
+    <span class="visitor-icon">◉</span>
+    <div><b id="visitorCount">กำลังนับ...</b><span>ผู้เข้าชมโดยประมาณ</span></div>
+  </div>
+</section>
 <footer>© 2026 My Model Shop · สินค้าของเล่นและของสะสม</footer>
 <!-- Popup ดูรูปสินค้า -->
 <div id="imagePopup" class="image-popup" onclick="if(event.target===this) closeGallery()">
@@ -62,7 +82,7 @@
       root.innerHTML='<div class="empty">โหลดสินค้าไม่สำเร็จ: ไม่พบฟังก์ชัน renderStore</div>';
       return;
     }
-    renderStore();
+    renderStore(); registerVisitor();
   }catch(e){
     console.error(e);
     root.innerHTML='<div class="empty">โหลดสินค้าไม่สำเร็จ: '+String(e?.message||e)+'</div>';
