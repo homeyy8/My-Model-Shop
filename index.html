@@ -11,22 +11,58 @@
   <div class="brand"><span class="brand-mark">M</span><div><b>MY MODEL SHOP</b><small>ของสะสม • โมเดล • ของเล่น</small></div></div>
   <nav><a class="active" href="index.html">หน้าร้าน</a><a href="admin.html">จัดการสินค้า</a></nav>
 </header>
+
 <section class="hero">
   <div><span class="eyebrow">COLLECTOR'S STORE</span><h1>รวมของสะสมที่คัดสรร<br>สำหรับคนรักโมเดล</h1><p>เลือกชมปืนของเล่นและโมเดลสัตว์ พร้อมรายละเอียดและราคาที่อัปเดตจากระบบจัดการสินค้า</p></div>
 </section>
+
 <main class="container">
-  <div class="section-head"><div><h2>สินค้าแนะนำ</h2><p id="countText"></p></div><div class="filters">
-    <button class="filter active" data-cat="all">ทั้งหมด</button>
-    <button class="filter" data-cat="toy-gun">ปืนของเล่น</button>
-    <button class="filter" data-cat="animal">โมเดลสัตว์</button>
-  </div></div>
+  <div class="section-head">
+    <div><h2>สินค้าแนะนำ</h2><p id="countText"></p></div>
+    <div class="filters">
+      <button class="filter active" data-cat="all">ทั้งหมด</button>
+      <button class="filter" data-cat="toy-gun">ปืนของเล่น</button>
+      <button class="filter" data-cat="animal">โมเดลสัตว์</button>
+    </div>
+  </div>
   <div id="products" class="grid"></div>
 </main>
+
 <footer>© 2026 My Model Shop · สินค้าของเล่นและของสะสม</footer>
+
+<!-- ต้องโหลด Supabase + config ก่อน app.js -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="config.js"></script>
 <script src="app.js"></script>
 <script>
-renderStore();
-document.querySelectorAll('.filter').forEach(b=>b.onclick=()=>{document.querySelectorAll('.filter').forEach(x=>x.classList.remove('active'));b.classList.add('active');renderStore(b.dataset.cat)});
+(function(){
+  const root=document.getElementById('products');
+  try{
+    if(!window.supabase){
+      root.innerHTML='<div class="empty">โหลดระบบเชื่อมต่อไม่สำเร็จ: Supabase JS โหลดไม่ได้</div>';
+      return;
+    }
+    if(!window.SUPABASE_URL || !window.SUPABASE_ANON_KEY){
+      root.innerHTML='<div class="empty">โหลดระบบเชื่อมต่อไม่สำเร็จ: ไม่พบค่า Supabase ใน config.js</div>';
+      return;
+    }
+    if(typeof renderStore !== 'function'){
+      root.innerHTML='<div class="empty">โหลดสินค้าไม่สำเร็จ: ไม่พบฟังก์ชัน renderStore</div>';
+      return;
+    }
+    renderStore();
+  }catch(e){
+    console.error(e);
+    root.innerHTML='<div class="empty">โหลดสินค้าไม่สำเร็จ: '+String(e?.message||e)+'</div>';
+  }
+
+  document.querySelectorAll('.filter').forEach(b=>b.onclick=()=>{
+    document.querySelectorAll('.filter').forEach(x=>x.classList.remove('active'));
+    b.classList.add('active');
+    try{ renderStore(b.dataset.cat); }
+    catch(e){ console.error(e); root.innerHTML='<div class="empty">โหลดสินค้าไม่สำเร็จ: '+String(e?.message||e)+'</div>'; }
+  });
+})();
 </script>
 </body>
 </html>
