@@ -57,7 +57,39 @@ async function renderStore(cat='all'){
   }catch(e){root.innerHTML=`<div class="empty">โหลดสินค้าไม่สำเร็จ: ${esc(e.message)}</div>`}
 }
 
-async function openGallery(id){try{const ps=await getProducts();galleryProduct=ps.find(p=>p.id===id);galleryIndex=0;if(!galleryProduct)return;document.getElementById('imagePopup').classList.add('show');renderGallery()}catch(e){alert('เปิดรูปไม่สำเร็จ: '+e.message)}}
+async function openGallery(id){
+  try{
+    const ps=await getProducts();
+    galleryProduct=ps.find(p=>p.id===id);
+    galleryIndex=0;
+    if(!galleryProduct || !galleryProduct.images?.length)return;
+
+    // สร้าง Popup อัตโนมัติ หากหน้า index.html ที่กำลังใช้งานไม่มี HTML ของ Popup
+    let popup=document.getElementById('imagePopup');
+    if(!popup){
+      popup=document.createElement('div');
+      popup.id='imagePopup';
+      popup.className='image-popup';
+      popup.innerHTML=`
+        <div class="image-popup-card">
+          <button type="button" class="image-popup-close" onclick="closeGallery()" aria-label="ปิด">×</button>
+          <button type="button" class="gallery-nav prev" onclick="galleryPrev()" aria-label="รูปก่อนหน้า">‹</button>
+          <img id="galleryMain" src="" alt="รูปสินค้า">
+          <button type="button" class="gallery-nav next" onclick="galleryNext()" aria-label="รูปถัดไป">›</button>
+          <div id="galleryInfo"></div>
+          <div id="galleryThumbs" class="gallery-thumbs"></div>
+        </div>`;
+      popup.addEventListener('click',e=>{if(e.target===popup)closeGallery()});
+      document.body.appendChild(popup);
+    }
+
+    popup.classList.add('show');
+    renderGallery();
+  }catch(e){
+    console.error('openGallery error:',e);
+    alert('เปิดรูปไม่สำเร็จ: '+(e?.message||e));
+  }
+}
 function renderGallery(){const p=galleryProduct;if(!p)return;const ims=p.images||[];document.getElementById('galleryMain').src=ims[galleryIndex]||'';document.getElementById('galleryInfo').textContent=`${galleryIndex+1} / ${ims.length}`;document.getElementById('galleryThumbs').innerHTML=ims.map((im,i)=>`<img class="gallery-thumb ${i===galleryIndex?'active':''}" src="${im}" onclick="galleryIndex=${i};renderGallery()">`).join('')}
 function galleryPrev(){if(!galleryProduct?.images?.length)return;galleryIndex=(galleryIndex-1+galleryProduct.images.length)%galleryProduct.images.length;renderGallery()}
 function galleryNext(){if(!galleryProduct?.images?.length)return;galleryIndex=(galleryIndex+1)%galleryProduct.images.length;renderGallery()}
