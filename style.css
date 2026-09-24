@@ -52,3 +52,75 @@
   .hero-contact-btn{min-width:0;width:100%}
   .hero-visitor{width:100%}
 }
+
+
+/* Contact section: high-contrast white + blue */
+.hero-contact{
+  margin-top:30px;
+  padding:22px 24px;
+  max-width:940px;
+  background:#fff;
+  border-radius:18px;
+  box-shadow:0 10px 30px rgba(0,0,0,.18);
+}
+.hero-contact-title{
+  color:#0877d1;
+  font-size:22px;
+  font-weight:900;
+  line-height:1.35;
+  margin-bottom:16px;
+}
+.hero-contact-links{
+  display:flex;
+  gap:16px;
+  flex-wrap:wrap;
+}
+.hero-contact-btn{
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+  min-width:320px;
+  padding:16px 20px;
+  border-radius:14px;
+  background:#fff;
+  color:#0877d1;
+  border:3px solid #0877d1;
+  box-shadow:none;
+  text-decoration:none;
+  transition:.2s ease;
+}
+.hero-contact-btn span{
+  color:#006dcc;
+  font-size:22px;
+  font-weight:900;
+  letter-spacing:.5px;
+}
+.hero-contact-btn small{
+  color:#0877d1;
+  font-size:17px;
+  font-weight:700;
+  line-height:1.5;
+}
+.hero-contact-btn:hover{
+  background:#f2f9ff;
+  transform:translateY(-2px);
+  box-shadow:0 8px 20px rgba(8,119,209,.18);
+}
+@media(max-width:600px){
+  .hero-contact{
+    padding:18px;
+  }
+  .hero-contact-title{
+    font-size:19px;
+  }
+  .hero-contact-btn{
+    min-width:0;
+    width:100%;
+  }
+  .hero-contact-btn span{
+    font-size:20px;
+  }
+  .hero-contact-btn small{
+    font-size:15px;
+  }
+}
