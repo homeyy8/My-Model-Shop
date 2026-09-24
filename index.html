@@ -29,6 +29,18 @@
 </main>
 
 <footer>© 2026 My Model Shop · สินค้าของเล่นและของสะสม</footer>
+<!-- Popup ดูรูปสินค้า -->
+<div id="imagePopup" class="image-popup" onclick="if(event.target===this) closeGallery()">
+  <div class="image-popup-card">
+    <button type="button" class="image-popup-close" onclick="closeGallery()" aria-label="ปิด">×</button>
+    <button type="button" class="gallery-nav prev" onclick="galleryPrev()" aria-label="รูปก่อนหน้า">‹</button>
+    <img id="galleryMain" src="" alt="รูปสินค้า">
+    <button type="button" class="gallery-nav next" onclick="galleryNext()" aria-label="รูปถัดไป">›</button>
+    <div id="galleryInfo"></div>
+    <div id="galleryThumbs" class="gallery-thumbs"></div>
+  </div>
+</div>
+
 
 <!-- ต้องโหลด Supabase + config ก่อน app.js -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
